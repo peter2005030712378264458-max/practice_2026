@@ -1,0 +1,15 @@
+IT Stalker Local - Qwen 2.5 3B + NVIDIA CUDA
+============================================
+
+1. Распакуй всю папку на ПК.
+2. Запуск: ZAPUSK.bat (попытка GPU через CUDA / NVIDIA).
+3. Если вылетает - ZAPUSK-CPU.bat.
+4. Первый запуск ~15-30 сек. Лог: it-stalker-debug.log в этой папке.
+
+Модель: Qwen2.5-3B-Instruct Q4_K_M.
+GPU: Qwen пробует CUDA и при ошибке откатывается на CPU. Whisper medium работает на CPU.
+Для CUDA должны быть доступны NVIDIA CUDA Runtime/Toolkit DLL.
+
+В логе должно быть: Whisper local: модель готова
+Для Qwen на GPU: LLM local: Qwen готова (cuda)
+Если CUDA runtime не найден/не загрузился: LLM local: Qwen готова (cpu)

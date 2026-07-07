@@ -1,0 +1,26 @@
+node_modules/
+resources/app/node_modules/
+.env
+dist/
+build/
+.DS_Store
+*.log
+
+# Local ML models
+*.gguf
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.onnx
+resources/llm/
+resources/whisper/*.bin
+ggml-medium.bin
+resources/whisper/ggml-silero-v6.2.0.bin
+
+# Local binaries/build output
+*.dll
+it-stalker-local.exe
+tools/whisper.cpp/
+snapshot_blob.bin
+v8_context_snapshot.bin

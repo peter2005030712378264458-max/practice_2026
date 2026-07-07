@@ -1,0 +1,54 @@
+{
+  "name": "it-stalker-win-local",
+  "version": "0.1.0",
+  "description": "IT Stalker — offline Windows assistant (local Whisper + Qwen)",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "dev": "electron-forge start",
+    "setup-models": "node scripts/setup-bundled-models.mjs",
+    "prepackage": "node scripts/setup-bundled-models.mjs",
+    "premake": "node scripts/setup-bundled-models.mjs",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "release": "npm run package && node scripts/patch-bootstrap.mjs && node scripts/patch-asar-unpack.mjs && powershell -ExecutionPolicy Bypass -File scripts/create-portable.ps1",
+    "patch-native": "node scripts/patch-asar-unpack.mjs",
+    "inspect-gpu": "node-llama-cpp inspect gpu",
+    "lint": "eslint --ext .ts,.tsx src"
+  },
+  "keywords": [
+    "electron",
+    "windows",
+    "offline",
+    "whisper",
+    "qwen"
+  ],
+  "author": "IT Stalker",
+  "license": "MIT",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.8.1",
+    "@electron-forge/maker-squirrel": "^7.8.1",
+    "@electron-forge/maker-zip": "^7.8.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.8.1",
+    "@electron-forge/plugin-webpack": "^7.8.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vercel/webpack-asset-relocator-loader": "^1.7.3",
+    "css-loader": "^7.1.2",
+    "electron": "^31.7.7",
+    "fork-ts-checker-webpack-plugin": "^9.0.2",
+    "node-loader": "^2.1.0",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "electron-audio-loopback": "^1.0.3",
+    "electron-squirrel-startup": "^1.0.1",
+    "node-llama-cpp": "^3.18.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.1",
+    "whisper-cpp-node": "^0.2.12"
+  }
+}
