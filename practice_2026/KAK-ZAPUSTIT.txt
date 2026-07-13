@@ -1,0 +1,38 @@
+IT Stalker Local — practice_2026
+================================
+
+Запусковые BAT-файлы разложены по папкам:
+
+practice_2026\launchers\01_recommended
+- основные рекомендуемые варианты CPU/GPU.
+
+practice_2026\launchers\02_qwen3_instruct
+- сравнение Qwen3 Instruct: CPU/CUDA + Whisper small/medium.
+
+practice_2026\launchers\03_qwen25_light
+- лёгкая Qwen2.5 для CPU и быстрых тестов.
+
+practice_2026\launchers\04_other_models
+- Gemma 4, Ministral 3, Llama 3.2.
+
+practice_2026\launchers\05_experimental_heavy
+- Qwen3 Thinking и Qwen3.5 9B, тяжёлые экспериментальные варианты.
+
+practice_2026\launchers\99_old_names_archive
+- старые ZAPUSK*.bat сохранены как архив. Для запуска лучше использовать новые папки выше.
+
+Рекомендованный запуск GPU:
+launchers\01_recommended\GPU_Qwen3_WhisperMedium.bat
+или для более лёгкого Whisper:
+launchers\01_recommended\GPU_Qwen3_WhisperSmall.bat
+
+Рекомендованный запуск CPU:
+launchers\01_recommended\CPU_Qwen25_WhisperMedium.bat
+или для более лёгкого Whisper:
+launchers\01_recommended\CPU_Qwen25_WhisperSmall.bat
+
+Модели LLM лежат в resources\llm.
+Модели Whisper лежат в resources\whisper.
+Лог запуска: it-stalker-debug.log.
+
+Важно: Whisper GPU отключён во всех BAT-файлах, потому что ранее GPU-режим Whisper аварийно завершал приложение на старте. CUDA-варианты означают, что LLM запускается на NVIDIA GPU, а Whisper остаётся на CPU.
