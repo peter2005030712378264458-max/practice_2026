@@ -1,23 +1,30 @@
 # Track only the restored application bundle.
 *
 !.gitignore
-!practice_2026/
-!practice_2026/**
+!/*.*
+!/LICENSE
+!/version
+!/launchers/
+!/launchers/**
+!/locales/
+!/locales/**
+!/resources/
+!/resources/**
 
 # Do not track large packaged executables.
-practice_2026/*.exe
+/*.exe
 # Do not track Node dependencies.
-practice_2026/**/node_modules/
-practice_2026/**/node_modules/**
+**/node_modules/
+**/node_modules/**
 # Do not track local model files.
-practice_2026/resources/llm/*
-!practice_2026/resources/llm/.gitkeep
-practice_2026/resources/whisper/*
-!practice_2026/resources/whisper/.gitkeep
+resources/llm/*
+!resources/llm/.gitkeep
+resources/whisper/*
+!resources/whisper/.gitkeep
 
 # Runtime/local noise from the app.
-practice_2026/*.log
-practice_2026/**/*.log
-practice_2026/**/*.tmp
-practice_2026/**/logs/
-practice_2026/**/cache/
+*.log
+**/*.log
+**/*.tmp
+**/logs/
+**/cache/

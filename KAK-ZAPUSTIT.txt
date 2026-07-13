@@ -3,22 +3,22 @@ IT Stalker Local — practice_2026
 
 Запусковые BAT-файлы разложены по папкам:
 
-practice_2026\launchers\01_recommended
+launchers\01_recommended
 - основные рекомендуемые варианты CPU/GPU.
 
-practice_2026\launchers\02_qwen3_instruct
+launchers\02_qwen3_instruct
 - сравнение Qwen3 Instruct: CPU/CUDA + Whisper small/medium.
 
-practice_2026\launchers\03_qwen25_light
+launchers\03_qwen25_light
 - лёгкая Qwen2.5 для CPU и быстрых тестов.
 
-practice_2026\launchers\04_other_models
+launchers\04_other_models
 - Gemma 4, Ministral 3, Llama 3.2.
 
-practice_2026\launchers\05_experimental_heavy
+launchers\05_experimental_heavy
 - Qwen3 Thinking и Qwen3.5 9B, тяжёлые экспериментальные варианты.
 
-practice_2026\launchers\99_old_names_archive
+launchers\99_old_names_archive
 - старые ZAPUSK*.bat сохранены как архив. Для запуска лучше использовать новые папки выше.
 
 Рекомендованный запуск GPU:

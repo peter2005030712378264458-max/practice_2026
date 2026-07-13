@@ -1,7 +1,7 @@
 Launchers layout
 ================
 
-Use files inside practice_2026\launchers.
+Use files inside launchers.
 All launchers start the same app, but with different LLM and Whisper models.
 Whisper GPU is intentionally disabled in all launchers because it previously crashed on startup.
 
