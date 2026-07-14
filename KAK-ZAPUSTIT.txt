@@ -25,17 +25,16 @@ IT Stalker Local — practice_2026
 4. Положить Whisper-модели в:
    resources\whisper
 
-5. Запустить нужный BAT-файл из папки launchers.
+5. Запустить it-stalker-local.exe.
 
-Рекомендованный запуск GPU:
-launchers\01_recommended\GPU_Qwen3_WhisperMedium.bat
-или для более лёгкого Whisper:
-launchers\01_recommended\GPU_Qwen3_WhisperSmall.bat
+6. В настройках выбрать набор моделей. Доступны четыре варианта:
+- CPU: Qwen2.5 3B + Whisper medium;
+- CPU: Qwen2.5 3B + Whisper small;
+- GPU (CUDA): Qwen3 4B + Whisper medium;
+- GPU (CUDA): Qwen3 4B + Whisper small.
 
-Рекомендованный запуск CPU:
-launchers\01_recommended\CPU_Qwen25_WhisperMedium.bat
-или для более лёгкого Whisper:
-launchers\01_recommended\CPU_Qwen25_WhisperSmall.bat
+После смены набора приложение автоматически перезапускается.
+BAT-файлы в launchers оставлены для совместимости.
 
 Модели LLM лежат в resources\llm.
 Модели Whisper лежат в resources\whisper.
