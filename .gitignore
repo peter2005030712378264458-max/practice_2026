@@ -28,3 +28,14 @@ resources/whisper/*
 **/*.tmp
 **/logs/
 **/cache/
+# Optional local Qwen3-TTS models and generated audio
+resources/tts/models/*
+!resources/tts/models/.gitkeep
+resources/tts/output/
+resources/tts/venv/
+resources/tts/*.wav
+resources/tts/*_input.txt
+resources/tts/*_output.wav
+resources/tts/test_*.py
+resources/tts/__pycache__/
+resources/tts/**/__pycache__/
