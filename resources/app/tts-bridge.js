@@ -37,6 +37,17 @@ function defaultModelPath() {
   return candidates.find(candidate => fs.existsSync(candidate)) || candidates[0];
 }
 
+function getTtsAvailability() {
+  const modelPath = process.env.IT_STALKER_TTS_MODEL || defaultModelPath();
+  if (!fs.existsSync(modelPath)) {
+    return { ok: false, error: `Модель озвучивания не найдена: ${modelPath}` };
+  }
+  if (!fs.existsSync(defaultPythonPath())) {
+    return { ok: false, error: 'Озвучивание недоступно: не найдено Python-окружение Qwen3-TTS.' };
+  }
+  return { ok: true };
+}
+
 function extractAnswerText(rawText) {
   const source = String(rawText || '');
   const answerMatch = source.match(/(?:^|\n|\s)\*{0,2}Ответ\*{0,2}\s*[:：]\s*([\s\S]*?)(?=(?:\n|\s)\*{0,2}(?:Техника|ВОПРОС|Вопрос)\*{0,2}\s*[:：]|$)/i);
@@ -322,8 +333,8 @@ function playAudio(webContents, audioFile, log) {
   });
 }
 
-async function synthesizeAndPlay(content, webContents, log) {
-  if (!isEnabled()) {
+async function synthesizeAndPlay(content, webContents, log, manual = false) {
+  if (!manual && !isEnabled()) {
     if (!disabledLogged && process.env.IT_STALKER_TTS_LOG_DISABLED === '1') {
       disabledLogged = true;
       log('TTS: disabled');
@@ -333,17 +344,23 @@ async function synthesizeAndPlay(content, webContents, log) {
 
   if (active) {
     log('TTS: previous synthesis is still running, skipping new answer');
-    return;
+    return { ok: false, error: 'Предыдущая генерация аудио ещё выполняется.' };
+  }
+
+  const availability = getTtsAvailability();
+  if (!availability.ok) {
+    log(`TTS: ${availability.error}`);
+    return availability;
   }
 
   const runner = process.env.IT_STALKER_TTS_COMMAND || defaultRunnerPath();
   if (!fs.existsSync(runner)) {
     log(`TTS: runner not found: ${runner}`);
-    return;
+    return { ok: false, error: 'Не найден скрипт генерации аудио.' };
   }
 
   const text = cleanForSpeech(content);
-  if (!text) return;
+  if (!text) return { ok: false, error: 'В ответе нет текста для озвучивания.' };
 
   active = true;
   const { inputFile, outputFile } = writeTempText(text);
@@ -353,13 +370,49 @@ async function synthesizeAndPlay(content, webContents, log) {
     await runRunner(runner, inputFile, outputFile, log);
     log(`TTS: audio ready (${outputFile})`);
     playAudio(webContents, outputFile, log);
+    return { ok: true };
   } catch (error) {
     log(`TTS: synthesis failed (${error.message})`);
+    return { ok: false, error: `Не удалось создать аудио: ${error.message}` };
   } finally {
     active = false;
     try { fs.unlinkSync(inputFile); } catch { /* ignore cleanup */ }
   }
 }
+
+const manualTtsScript = `(() => {
+  if (window.__itStalkerTtsButtonsInstalled) return;
+  window.__itStalkerTtsButtonsInstalled = true;
+  const addButtons = () => document.querySelectorAll('.insight-card:not(.streaming)').forEach(card => {
+    if (card.querySelector('.tts-answer-btn')) return;
+    const answer = card.querySelector('.insight-summary, .insight-deep')?.innerText.trim();
+    if (!answer) return;
+    card.style.position = 'relative';
+    const button = document.createElement('button');
+    button.className = 'tts-answer-btn';
+    button.type = 'button';
+    button.title = 'Озвучить этот ответ';
+    button.setAttribute('aria-label', 'Озвучить этот ответ');
+    button.textContent = '🔊';
+    Object.assign(button.style, {
+      position: 'absolute', top: '10px', right: '10px', border: '0', borderRadius: '7px',
+      padding: '5px 7px', cursor: 'pointer', background: 'rgba(255,255,255,.1)', color: '#e8eaed'
+    });
+    button.addEventListener('click', async () => {
+      const text = card.querySelector('.insight-summary, .insight-deep')?.innerText.trim();
+      if (!text) return;
+      button.disabled = true;
+      button.textContent = '…';
+      const result = await window.ghostAPI.synthesizeTts(text);
+      button.disabled = false;
+      button.textContent = '🔊';
+      if (!result?.ok) window.alert(result?.error || 'Не удалось создать аудио.');
+    });
+    card.append(button);
+  });
+  new MutationObserver(addButtons).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  addButtons();
+})();`;
 
 function patchWebContents(webContents, log) {
   if (!webContents || patchedWebContents.has(webContents)) return;
@@ -376,6 +429,9 @@ function patchWebContents(webContents, log) {
     }
     return originalSend(channel, payload, ...rest);
   };
+  webContents.on('did-finish-load', () => {
+    webContents.executeJavaScript(manualTtsScript, true).catch(error => log(`TTS: button install failed (${error.message})`));
+  });
   log('TTS: webContents patched');
 }
 
@@ -386,6 +442,9 @@ function patchWindow(window, log) {
 function install(electron, log = () => {}) {
   if (installed) return;
   installed = true;
+
+  electron.ipcMain.handle('ghost:synthesize-tts', async (event, content) =>
+    synthesizeAndPlay(content, event.sender, log, true));
 
   const OriginalBrowserWindow = electron.BrowserWindow;
   if (!OriginalBrowserWindow) {

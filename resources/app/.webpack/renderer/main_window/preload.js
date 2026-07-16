@@ -1,1 +1,46 @@
-(()=>{"use strict";var e={288(e){e.exports=require("electron")}};const n={};function o(r){const s=n[r];if(void 0!==s)return s.exports;const t=n[r]={exports:{}};return e[r](t,t.exports,o),t.exports}(()=>{const e=o(288),n={getConfig:()=>e.ipcRenderer.invoke("ghost:get-config"),setConfig:n=>e.ipcRenderer.invoke("ghost:set-config",n),getStatus:()=>e.ipcRenderer.invoke("ghost:get-status"),requestScreenPermission:()=>e.ipcRenderer.invoke("ghost:request-screen-permission"),openScreenRecordingSettings:()=>e.ipcRenderer.invoke("ghost:open-screen-settings"),sendMicPcmChunk:n=>{e.ipcRenderer.send("ghost:pcm-chunk-mic",n)},sendSystemPcmChunk:n=>{e.ipcRenderer.send("ghost:pcm-chunk-system",n)},setCaptureActive:n=>{e.ipcRenderer.send("ghost:capture-active",n)},onTranscript:n=>{const o=(e,o)=>{n(o)};return e.ipcRenderer.on("ghost:transcript",o),()=>e.ipcRenderer.removeListener("ghost:transcript",o)},onTranscribing:n=>{const o=(e,o)=>{n(o)};return e.ipcRenderer.on("ghost:transcribing",o),()=>e.ipcRenderer.removeListener("ghost:transcribing",o)},processTranscript:n=>e.ipcRenderer.invoke("ghost:process-transcript",n),resetSession:()=>e.ipcRenderer.invoke("ghost:reset-session"),processContext:n=>e.ipcRenderer.invoke("ghost:process-context",n),cancelStream:()=>e.ipcRenderer.invoke("ghost:cancel-stream"),summarizeConference:n=>e.ipcRenderer.invoke("ghost:summarize-conference",n),exportConference:n=>e.ipcRenderer.invoke("ghost:export-conference",n),getZoomStealthStatus:()=>e.ipcRenderer.invoke("ghost:get-zoom-stealth-status"),openZoomApp:()=>e.ipcRenderer.invoke("ghost:open-zoom-app"),openZoomShareSettingsHelp:()=>e.ipcRenderer.invoke("ghost:open-zoom-share-help"),onInsightStream:n=>{const o=(e,o)=>{n(o)};return e.ipcRenderer.on("ghost:insight-stream",o),()=>e.ipcRenderer.removeListener("ghost:insight-stream",o)},setIgnoreMouseEvents:(n,o=!0)=>{e.ipcRenderer.send("ghost:set-ignore-mouse-events",n,o)},minimizeWindow:()=>e.ipcRenderer.send("ghost:minimize-window"),closeWindow:()=>e.ipcRenderer.send("ghost:close-window"),setAlwaysOnTop:n=>e.ipcRenderer.invoke("ghost:set-always-on-top",n),log:n=>e.ipcRenderer.send("ghost:log",n)};e.contextBridge.exposeInMainWorld("ghostAPI",n),e.contextBridge.exposeInMainWorld("electronAPI",{enableLoopbackAudio:()=>e.ipcRenderer.invoke("enable-loopback-audio"),disableLoopbackAudio:()=>e.ipcRenderer.invoke("disable-loopback-audio"),isMac:"darwin"===process.platform,isWin:"win32"===process.platform})})()})();
+(() => {
+  'use strict';
+  const { contextBridge, ipcRenderer } = require('electron');
+
+  contextBridge.exposeInMainWorld('ghostAPI', {
+    getConfig: () => ipcRenderer.invoke('ghost:get-config'),
+    setConfig: config => ipcRenderer.invoke('ghost:set-config', config),
+    getStatus: () => ipcRenderer.invoke('ghost:get-status'),
+    requestScreenPermission: () => ipcRenderer.invoke('ghost:request-screen-permission'),
+    openScreenRecordingSettings: () => ipcRenderer.invoke('ghost:open-screen-settings'),
+    sendMicPcmChunk: chunk => ipcRenderer.send('ghost:pcm-chunk-mic', chunk),
+    sendSystemPcmChunk: chunk => ipcRenderer.send('ghost:pcm-chunk-system', chunk),
+    setCaptureActive: active => ipcRenderer.send('ghost:capture-active', active),
+    onTranscript: callback => listen('ghost:transcript', callback),
+    onTranscribing: callback => listen('ghost:transcribing', callback),
+    processTranscript: text => ipcRenderer.invoke('ghost:process-transcript', text),
+    resetSession: () => ipcRenderer.invoke('ghost:reset-session'),
+    processContext: input => ipcRenderer.invoke('ghost:process-context', input),
+    cancelStream: () => ipcRenderer.invoke('ghost:cancel-stream'),
+    summarizeConference: entries => ipcRenderer.invoke('ghost:summarize-conference', entries),
+    exportConference: payload => ipcRenderer.invoke('ghost:export-conference', payload),
+    getZoomStealthStatus: () => ipcRenderer.invoke('ghost:get-zoom-stealth-status'),
+    openZoomApp: () => ipcRenderer.invoke('ghost:open-zoom-app'),
+    openZoomShareSettingsHelp: () => ipcRenderer.invoke('ghost:open-zoom-share-help'),
+    onInsightStream: callback => listen('ghost:insight-stream', callback),
+    synthesizeTts: text => ipcRenderer.invoke('ghost:synthesize-tts', text),
+    setIgnoreMouseEvents: (ignore, forward = true) => ipcRenderer.send('ghost:set-ignore-mouse-events', ignore, forward),
+    minimizeWindow: () => ipcRenderer.send('ghost:minimize-window'),
+    closeWindow: () => ipcRenderer.send('ghost:close-window'),
+    setAlwaysOnTop: enabled => ipcRenderer.invoke('ghost:set-always-on-top', enabled),
+    log: message => ipcRenderer.send('ghost:log', message),
+  });
+
+  function listen(channel, callback) {
+    const handler = (_event, payload) => callback(payload);
+    ipcRenderer.on(channel, handler);
+    return () => ipcRenderer.removeListener(channel, handler);
+  }
+
+  contextBridge.exposeInMainWorld('electronAPI', {
+    enableLoopbackAudio: () => ipcRenderer.invoke('enable-loopback-audio'),
+    disableLoopbackAudio: () => ipcRenderer.invoke('disable-loopback-audio'),
+    isMac: process.platform === 'darwin',
+    isWin: process.platform === 'win32',
+  });
+})();
